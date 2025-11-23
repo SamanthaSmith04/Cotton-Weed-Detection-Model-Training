@@ -5,4 +5,8 @@
 
 `cd ..` until you reach the root directory
 
-`cd fs/scratch/PAS3162/smith.15485`
+`cd fs/scratch/PAS3162/smith.15485/cotton_weed_competition_dataset`
+
+`source cotton-weed-env/bin/activate`
+
+`3lc service`
