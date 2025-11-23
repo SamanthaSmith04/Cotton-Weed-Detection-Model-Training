@@ -27,8 +27,8 @@ from tlc_ultralytics import YOLO, Settings
 
 # 3LC Table URLs (get these from Dashboard)
 # Click your table -> Copy URL from browser or table info panel
-TRAIN_TABLE_URL = "paste_your_train_table_url_here"
-VAL_TABLE_URL = "paste_your_val_table_url_here"
+TRAIN_TABLE_URL = "/users/PAS3162/smith15485/.local/share/3LC/projects/kaggle_cotton_weed_detection/datasets/cotton_weed_det3/tables/cotton_weed_det3-val1"
+VAL_TABLE_URL = "/users/PAS3162/smith15485/.local/share/3LC/projects/kaggle_cotton_weed_detection/datasets/cotton_weed_det3/tables/cotton_weed_det3-val1"
 
 # Example of table URLs 
 # TRAIN_TABLE_URL = "C:/Users/rishi/AppData/Local/3LC/3LC/projects/kaggle_cotton_weed_detection/datasets/cotton_weed/tables/cotton_weed-train"
@@ -42,8 +42,8 @@ RUN_NAME = (
 RUN_DESCRIPTION = "Baseline YOLOv8n training run"  # Describe this experiment
     
     # Training hyperparameters
-EPOCHS = 5  # Number of training epochs
-BATCH_SIZE = 16  # Batch size (reduce if GPU memory issues)
+EPOCHS = 100 # Number of training epochs
+BATCH_SIZE = 32  # Batch size (reduce if GPU memory issues)
 IMAGE_SIZE = 640  # Input image size (FIXED by competition)
 DEVICE = 0  # GPU device (0 for first GPU, 'cpu' for CPU)
 WORKERS = 4  # Number of dataloader workers
