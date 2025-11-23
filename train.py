@@ -27,8 +27,10 @@ from tlc_ultralytics import YOLO, Settings
 
 # 3LC Table URLs (get these from Dashboard)
 # Click your table -> Copy URL from browser or table info panel
-TRAIN_TABLE_URL = "/users/PAS3162/smith15485/.local/share/3LC/projects/kaggle_cotton_weed_detection/datasets/cotton_weed_det3/tables/cotton_weed_det3-val1"
-VAL_TABLE_URL = "/users/PAS3162/smith15485/.local/share/3LC/projects/kaggle_cotton_weed_detection/datasets/cotton_weed_det3/tables/cotton_weed_det3-val1"
+
+TRAIN_TABLE_URL = "/fs/scratch/PAS3162/smith.15485/cotton_weed_competition_dataset/tables/cotton_weed_det3-train1"
+VAL_TABLE_URL = "/fs/scratch/PAS3162/smith.15485/cotton_weed_competition_dataset/tables/cotton_weed_det3-val1"
+
 
 # Example of table URLs 
 # TRAIN_TABLE_URL = "C:/Users/rishi/AppData/Local/3LC/3LC/projects/kaggle_cotton_weed_detection/datasets/cotton_weed/tables/cotton_weed-train"

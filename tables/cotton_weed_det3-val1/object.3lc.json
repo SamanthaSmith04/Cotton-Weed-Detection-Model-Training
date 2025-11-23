@@ -1,0 +1,306 @@
+{
+  "type":"TableFromYolo",
+  "created":"2025-11-22 17:11:02.006632+00:00",
+  "serialization_version":"1",
+  "row_cache_url":"./row_cache.parquet",
+  "row_cache_populated":true,
+  "override_table_rows_schema":{
+    "values":{
+      "weight":{
+        "display_name":"Weight",
+        "description":"The weights of the samples in this table.",
+        "sample_type":"hidden",
+        "value":{
+          "default_value":1.0,
+          "min":0,
+          "enforce_min":true,
+          "number_role":"sample_weight"
+        }
+      }
+    }
+  },
+  "row_count":133,
+  "input_url":"./dataset.yaml",
+  "split":"val",
+  "schema":{
+    "display_name":"Schema",
+    "description":"The Schema describing the layout of the 3LC object",
+    "values":{
+      "type":{
+        "display_name":"Type",
+        "description":"The type name of the class",
+        "writable":false,
+        "value":{
+          "type":"string",
+          "string_role":"ObjectType"
+        }
+      },
+      "schema":{
+        "display_name":"Schema",
+        "description":"The Schema object format",
+        "value":{
+          "type":"dict"
+        }
+      },
+      "created":{
+        "display_name":"Created",
+        "description":"The datetime of the object creation",
+        "value":{
+          "type":"string",
+          "string_role":"Datetime"
+        }
+      },
+      "serialization_version":{
+        "display_name":"Version",
+        "description":"The serialization version of the object",
+        "value":{
+          "type":"string",
+          "string_role":"Version"
+        }
+      },
+      "transaction_id":{
+        "display_name":"Transaction ID",
+        "description":"The transaction associated with this object",
+        "writable":false,
+        "default_visible":false,
+        "value":{
+          "type":"string"
+        }
+      },
+      "is_url_writable":{
+        "display_name":"Is URL writable",
+        "description":"Whether the URL where the object is stored is writable.",
+        "writable":false,
+        "display_importance":-1,
+        "transient":true,
+        "default_visible":false,
+        "value":{
+          "type":"bool"
+        }
+      },
+      "row_cache_url":{
+        "display_name":"Row cache URL",
+        "description":"An optional URL referring to a cached version of all rows within this table",
+        "writable":false,
+        "value":{
+          "type":"string",
+          "string_role":"URL"
+        }
+      },
+      "row_cache_populated":{
+        "display_name":"Row cache populated",
+        "description":"Whether 'row_cache_url' refers to a cached version of all rows within this table",
+        "writable":false,
+        "value":{
+          "type":"bool"
+        }
+      },
+      "dataset_name":{
+        "display_name":"Dataset name",
+        "description":"The name of the dataset that this table belongs to",
+        "writable":false,
+        "display_importance":399,
+        "transient":true,
+        "value":{
+          "type":"string"
+        }
+      },
+      "project_name":{
+        "display_name":"Project name",
+        "description":"The name of the project that this table belongs to",
+        "writable":false,
+        "display_importance":400,
+        "transient":true,
+        "value":{
+          "type":"string"
+        }
+      },
+      "override_table_rows_schema":{
+        "display_name":"Override Schema",
+        "description":"A schema describing potentially sparse overrides for the base schema",
+        "value":{
+          "type":"dict"
+        }
+      },
+      "row_count":{
+        "display_name":"Row count",
+        "description":"The number of rows within this table (if known).",
+        "writable":false,
+        "value":{
+          "type":"int32",
+          "min":-1,
+          "max":1000000000,
+          "enforce_min":true,
+          "map":{
+            "-1.0":{
+              "internal_name":"Unknown",
+              "display_name":"(Unknown)",
+              "description":"The table hasn't produced its rows yet, and so the row count is still unknown",
+              "display_color":"#c06060"
+            }
+          }
+        }
+      },
+      "description":{
+        "display_name":"Description",
+        "display_importance":-1,
+        "value":{
+          "type":"string"
+        }
+      },
+      "input_tables":{
+        "display_name":"Input Tables",
+        "description":"Which input tables have been used to produce the table.",
+        "writable":false,
+        "size0":{
+          "type":"int32",
+          "min":0,
+          "max":1000,
+          "enforce_min":true
+        },
+        "value":{
+          "type":"string",
+          "string_role":"URL/Table"
+        }
+      },
+      "input_url":{
+        "value":{
+          "type":"string",
+          "string_role":"URL"
+        }
+      },
+      "split":{
+        "value":{
+          "type":"string"
+        }
+      },
+      "datasets_dir_url":{
+        "value":{
+          "type":"string",
+          "string_role":"URL"
+        }
+      },
+      "override_split_path":{
+        "size0":{
+          "type":"int32",
+          "min":0,
+          "enforce_min":true
+        },
+        "value":{
+          "type":"string"
+        }
+      },
+      "rows":{
+        "display_name":"Table rows",
+        "description":"Schema describing the column layout of the rows within this table",
+        "size0":{
+          "type":"int32",
+          "min":0,
+          "max":1000000000,
+          "enforce_min":true,
+          "number_role":"table_row_index",
+          "display_name":"Table row"
+        },
+        "values":{
+          "image":{
+            "writable":false,
+            "value":{
+              "type":"string",
+              "string_role":"URL/Image"
+            }
+          },
+          "width":{
+            "writable":false,
+            "value":{
+              "type":"int32"
+            }
+          },
+          "height":{
+            "writable":false,
+            "value":{
+              "type":"int32"
+            }
+          },
+          "bbs":{
+            "description":"Bounding boxes",
+            "values":{
+              "image_width":{
+                "value":{
+                  "type":"int32"
+                }
+              },
+              "image_height":{
+                "value":{
+                  "type":"int32"
+                }
+              },
+              "bb_list":{
+                "description":"Bounding boxes",
+                "size0":{
+                  "type":"int32",
+                  "min":0,
+                  "max":1000,
+                  "enforce_min":true
+                },
+                "values":{
+                  "x0":{
+                    "value":{
+                      "number_role":"bounding_box_center_x",
+                      "unit":"relative"
+                    }
+                  },
+                  "x1":{
+                    "value":{
+                      "number_role":"bounding_box_size_x",
+                      "unit":"relative"
+                    }
+                  },
+                  "y0":{
+                    "value":{
+                      "number_role":"bounding_box_center_y",
+                      "unit":"relative"
+                    }
+                  },
+                  "y1":{
+                    "value":{
+                      "number_role":"bounding_box_size_y",
+                      "unit":"relative"
+                    }
+                  },
+                  "label":{
+                    "value":{
+                      "type":"int32",
+                      "number_role":"label",
+                      "map":{
+                        "0.0":{
+                          "internal_name":"carpetweed"
+                        },
+                        "1.0":{
+                          "internal_name":"morningglory"
+                        },
+                        "2.0":{
+                          "internal_name":"palmer_amaranth"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "weight":{
+            "display_name":"Weight",
+            "description":"The weights of the samples in this table.",
+            "sample_type":"hidden",
+            "value":{
+              "default_value":1.0,
+              "min":0,
+              "enforce_min":true,
+              "number_role":"sample_weight"
+            }
+          }
+        }
+      }
+    }
+  }
+}
