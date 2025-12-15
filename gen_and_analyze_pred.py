@@ -5,7 +5,7 @@ from tlc_ultralytics import YOLO, Settings
 
 # Define paths and constants
 WORK_DIR = Path(".")
-TEST_DIR = WORK_DIR / "val" / "images"
+TEST_DIR = WORK_DIR / "test" / "images"
 PRED_DIR = Path("predictions")
 IMAGE_SIZE = 640  # Competition requirement
 

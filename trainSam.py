@@ -28,7 +28,7 @@ from tlc_ultralytics import YOLO, Settings
 # 3LC Table URLs (get these from Dashboard)
 # Click your table -> Copy URL from browser or table info panel
 
-TRAIN_TABLE_URL = "/fs/scratch/PAS3162/smith.15485/cotton_weed_competition_dataset/3LC/kaggle_cotton_weed_detection/datasets/cotton_weed_det3/tables/cotton_weed_det3-train1"
+TRAIN_TABLE_URL = "/fs/scratch/PAS3162/smith.15485/cotton_weed_competition_dataset/3LC/kaggle_cotton_weed_detection/datasets/cotton_weed_det3/tables/UpdatedBoxes"
 VAL_TABLE_URL = "/fs/scratch/PAS3162/smith.15485/cotton_weed_competition_dataset/3LC/kaggle_cotton_weed_detection/datasets/cotton_weed_det3/tables/cotton_weed_det3-val1"
 
 
@@ -39,20 +39,20 @@ VAL_TABLE_URL = "/fs/scratch/PAS3162/smith.15485/cotton_weed_competition_dataset
     # Run configuration
 PROJECT_NAME = "kaggle_cotton_weed_detection"  # 3LC project name
 RUN_NAME = (
-    "DEFAULT_run"  # Change for each experiment (e.g., "v2_with_augmentation")
+    "D5"  # Change for each experiment (e.g., "v2_with_augmentation")
 )
-RUN_DESCRIPTION = "Baseline YOLOv8n training run"  # Describe this experiment
+RUN_DESCRIPTION = "D52"  # Describe this experiment
     
     # Training hyperparameters
-EPOCHS = 100 # Number of training epochs
+EPOCHS = 75 # Number of training epochs
 BATCH_SIZE = 32  # Batch size (reduce if GPU memory issues)
 IMAGE_SIZE = 640  # Input image size (FIXED by competition)
 DEVICE = 0  # GPU device (0 for first GPU, 'cpu' for CPU)
 WORKERS = 4  # Number of dataloader workers
 
 # Advanced hyperparameters (optional)
-LR0 = 0.01  # Initial learning rate
-PATIENCE = 20  # Early stopping patience (epochs without improvement)
+LR0 = 0.001  # Initial learning rate
+PATIENCE = 10  # Early stopping patience (epochs without improvement)
 
 # Data augmentation (set to True to enable advanced augmentation)
 USE_AUGMENTATION = False  # Enable mosaic, mixup, copy_paste
@@ -143,6 +143,12 @@ def main():
         "patience": PATIENCE,
         "settings": settings,
         "val": True,
+        "optimizer": "AdamW",
+        "weight_decay": 0.0005,
+        "fliplr": 0.25,
+        "flipud": 0.25,
+        "degrees": 10.0,
+        "scale": 0.6,
     }
 
     # Add augmentation if enabled

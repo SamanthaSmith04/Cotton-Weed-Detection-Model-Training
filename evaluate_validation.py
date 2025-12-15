@@ -1,25 +1,85 @@
 #!/usr/bin/env python3
 """
-Evaluate YOLOv8 predictions loaded from CSV or YOLO txt files on validation set using mAP@0.5
+Evaluate YOLO predictions from CSV against GT CSV using proper mAP@0.5 (VOC-style)
 """
 
-from pathlib import Path
-import os
 import csv
+from pathlib import Path
+from collections import defaultdict
+import numpy as np
 
 # ============================
-# CONFIGURATION
+# CONFIG
 # ============================
 WORK_DIR = Path(".")
-VAL_IMAGES_DIR = WORK_DIR / "val/images"
-VAL_LABELS_DIR = WORK_DIR / "val/labels"
-PRED_DIR = WORK_DIR / "predictions/labels"  # Folder with YOLO txt predictions
+GT_CSV = WORK_DIR / "test/solutions.csv"
+PRED_CSV = WORK_DIR / "result.csv"
 IOU_THRESHOLD = 0.5
 CLASS_NAMES = ["Carpetweed", "Morning Glory", "Palmer Amaranth"]
 
 # ============================
-# UTILITY FUNCTIONS
+# UTILITIES
 # ============================
+
+def load_gt(csv_path):
+    """
+    Load GT boxes from CSV (image_id, width, height, prediction_string, usage)
+    Returns: dict {image_id: [[cls,x,y,w,h], ...]} and dict of image sizes
+    """
+    gt_dict = {}
+    image_sizes = {}
+    with open(csv_path, newline="") as f:
+        reader = csv.reader(f)
+        header = next(reader)
+        for row in reader:
+            image_id = row[0]
+            width = float(row[1])
+            height = float(row[2])
+            image_sizes[image_id] = (width, height)
+
+            pred_str = row[3].strip()
+            boxes = []
+            if pred_str:
+                parts = pred_str.split()
+                for i in range(0, len(parts), 5):  # cls x y w h
+                    if i + 4 >= len(parts):
+                        break
+                    cls = int(float(parts[i]))
+                    x = float(parts[i+1])
+                    y = float(parts[i+2])
+                    w = float(parts[i+3])
+                    h = float(parts[i+4])
+                    boxes.append([cls, x, y, w, h])
+            gt_dict[image_id] = boxes
+    return gt_dict, image_sizes
+
+def load_pred(csv_path):
+    """
+    Load predictions CSV (image_id, prediction_string)
+    Returns: dict {image_id: [[cls, conf, x, y, w, h], ...]}
+    """
+    pred_dict = {}
+    with open(csv_path, newline="") as f:
+        reader = csv.reader(f)
+        header = next(reader)
+        for row in reader:
+            image_id = row[0]
+            pred_str = row[1].strip()
+            boxes = []
+            if pred_str:
+                parts = pred_str.split()
+                for i in range(0, len(parts), 6):  # cls conf x y w h
+                    if i + 5 >= len(parts):
+                        break
+                    cls = int(float(parts[i]))
+                    conf = float(parts[i+1])
+                    x = float(parts[i+2])
+                    y = float(parts[i+3])
+                    w = float(parts[i+4])
+                    h = float(parts[i+5])
+                    boxes.append([cls, conf, x, y, w, h])
+            pred_dict[image_id] = boxes
+    return pred_dict
 
 def iou(box1, box2):
     x1, y1, w1, h1 = box1
@@ -31,74 +91,91 @@ def iou(box1, box2):
     inter_x1, inter_y1 = max(xa1, xb1), max(ya1, yb1)
     inter_x2, inter_y2 = min(xa2, xb2), min(ya2, yb2)
     inter_area = max(0, inter_x2 - inter_x1) * max(0, inter_y2 - inter_y1)
-    union_area = w1 * h1 + w2 * h2 - inter_area
+    union_area = w1*h1 + w2*h2 - inter_area
     return inter_area / union_area if union_area > 0 else 0
 
-def load_gt(label_path):
-    if not os.path.exists(label_path):
-        return []
-    boxes = []
-    with open(label_path) as f:
-        for line in f:
-            c, x, y, w, h = map(float, line.strip().split())
-            boxes.append([int(c), x, y, w, h])
-    return boxes
+# ============================
+# COMPUTE VOC AP
+# ============================
 
-def load_pred(pred_path):
-    if not os.path.exists(pred_path):
-        return []
-    boxes = []
-    with open(pred_path) as f:
-        for line in f:
-            parts = line.strip().split()
-            if len(parts) >= 6:
-                c, conf, x, y, w, h = parts
-                boxes.append([int(c), float(conf), float(x), float(y), float(w), float(h)])
-    return boxes
-
-def compute_ap(gt_boxes, pred_boxes, iou_thresh=0.5):
-    if len(gt_boxes) == 0 and len(pred_boxes) == 0:
-        return 1.0
-    if len(gt_boxes) == 0:
-        return 0.0
-    matched = set()
-    tp, fp = 0, 0
-    pred_boxes_sorted = sorted(pred_boxes, key=lambda x: -x[1])
-    for pred in pred_boxes_sorted:
-        p_class, p_conf, *p_box = pred
-        best_iou, best_idx = 0, -1
-        for idx, gt in enumerate(gt_boxes):
-            gt_class, *gt_box = gt
-            if gt_class != p_class:
-                continue
-            current_iou = iou(p_box, gt_box)
-            if current_iou > best_iou:
-                best_iou = current_iou
-                best_idx = idx
-        if best_iou >= iou_thresh and best_idx not in matched:
-            tp += 1
-            matched.add(best_idx)
+def compute_voc_ap(rec, prec):
+    """
+    Compute VOC 2007 11-point AP
+    """
+    ap = 0.0
+    for t in np.arange(0., 1.1, 0.1):
+        if np.sum(rec >= t) == 0:
+            p = 0
         else:
-            fp += 1
-    precision = tp / (tp + fp + 1e-9)
-    return precision
+            p = np.max(prec[rec >= t])
+        ap += p / 11.0
+    return ap
+
+def evaluate_class(gt_dict, pred_dict, class_idx, iou_thresh=0.5):
+    """
+    Compute AP for a single class
+    """
+    # Prepare lists
+    gt_boxes_per_image = {}
+    npos = 0  # total number of GT boxes of this class
+    for img_id, boxes in gt_dict.items():
+        gt_boxes_per_image[img_id] = [b for b in boxes if b[0]==class_idx]
+        npos += len(gt_boxes_per_image[img_id])
+
+    # Collect all predictions for this class
+    pred_list = []
+    for img_id, boxes in pred_dict.items():
+        for b in boxes:
+            if b[0]==class_idx:
+                pred_list.append([img_id, b[1], b[2], b[3], b[4], b[5]])  # image_id, conf, x, y, w, h
+
+    # Sort by confidence descending
+    pred_list.sort(key=lambda x: -x[1])
+
+    # Match predictions
+    tp = np.zeros(len(pred_list))
+    fp = np.zeros(len(pred_list))
+    gt_matched = {img_id: np.zeros(len(boxes)) for img_id, boxes in gt_boxes_per_image.items()}
+
+    for i, pred in enumerate(pred_list):
+        img_id, conf, x, y, w, h = pred
+        bb = [x, y, w, h]
+        gts = gt_boxes_per_image.get(img_id, [])
+        ious = np.array([iou(bb, gt[1:]) for gt in gts]) if gts else np.array([])
+        if len(ious) > 0:
+            max_iou_idx = np.argmax(ious)
+            max_iou = ious[max_iou_idx]
+            if max_iou >= iou_thresh and gt_matched[img_id][max_iou_idx]==0:
+                tp[i] = 1
+                gt_matched[img_id][max_iou_idx] = 1
+            else:
+                fp[i] = 1
+        else:
+            fp[i] = 1
+
+    # Compute precision/recall
+    fp_cum = np.cumsum(fp)
+    tp_cum = np.cumsum(tp)
+    rec = tp_cum / npos if npos>0 else np.zeros_like(tp_cum)
+    prec = tp_cum / (tp_cum + fp_cum + 1e-9)
+
+    ap = compute_voc_ap(rec, prec)
+    return ap
 
 # ============================
-# RUN EVALUATION
+# MAIN
 # ============================
-val_images = list(VAL_IMAGES_DIR.glob("*.jpg"))
+
+GT, image_sizes = load_gt(GT_CSV)
+PRED = load_pred(PRED_CSV)
+
 aps = []
-
-print(f"Evaluating {len(val_images)} validation images using predictions from '{PRED_DIR}'...\n")
-
-for img_path in val_images:
-    image_id = img_path.stem
-    gt_boxes = load_gt(VAL_LABELS_DIR / f"{image_id}.txt")
-    pred_boxes = load_pred(PRED_DIR / f"{image_id}.txt")
-    ap = compute_ap(gt_boxes, pred_boxes, IOU_THRESHOLD)
+for cls_idx, cls_name in enumerate(CLASS_NAMES):
+    ap = evaluate_class(GT, PRED, cls_idx, IOU_THRESHOLD)
+    print(f"AP@0.5 for class '{cls_name}': {ap:.4f}")
     aps.append(ap)
 
-map50 = sum(aps) / len(aps)
+map50 = np.mean(aps)
 print("="*50)
-print(f"Offline mAP@0.5 on validation set: {map50:.4f}")
+print(f"Offline mAP@0.5: {map50:.4f}")
 print("="*50)

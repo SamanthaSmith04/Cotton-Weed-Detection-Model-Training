@@ -26,15 +26,15 @@ from tlc_ultralytics import YOLO
 # ============================================================================
 
 # Model weights path (from training)
-MODEL_WEIGHTS = "runs/detect/yolov8n_baseline15/weights/best.pt"
+MODEL_WEIGHTS = "runs/detect/D53/weights/best.pt"
 
 # Inference settings
-CONFIDENCE_THRESHOLD = 0  # Confidence threshold for detections
+CONFIDENCE_THRESHOLD = 0.0  # Confidence threshold for detections
 IMAGE_SIZE = 640  # Input image size (FIXED by competition)
 DEVICE = 0  # GPU device (0 for first GPU, 'cpu' for CPU)
 
 # Output
-OUTPUT_CSV = "submission.csv"  # Output submission file
+OUTPUT_CSV = "result.csv"  # Output submission file
 
 # ============================================================================
 # PREDICTION PIPELINE - No need to edit below this line
@@ -81,7 +81,7 @@ def main():
     print("OK - Model loaded")
 
     # Clean up existing predictions
-    pred_dir = Path("predictions")
+    pred_dir = Path("predictions_temp")
     if pred_dir.exists():
         shutil.rmtree(pred_dir)
 
@@ -92,7 +92,7 @@ def main():
 
     model.predict(
         source=str(test_dir),
-        save=False,  # Don't save annotated images
+        save=True,  # Don't save annotated images
         save_txt=True,  # Save predictions as text
         save_conf=True,  # Include confidence scores
         conf=CONFIDENCE_THRESHOLD,

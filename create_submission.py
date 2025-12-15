@@ -22,7 +22,7 @@ print("GENERATING KAGGLE SUBMISSION")
 print("=" * 70)
 
 labels_dir = PRED_DIR / "labels"
-output_csv = "submission.csv"
+output_csv = "result.csv"
 
 # Get all test images (deduplicate by stem to avoid duplicates from case-insensitive file systems)
 test_images_dict = {}  # Use dict to automatically deduplicate by image_id (stem)
