@@ -7,6 +7,8 @@ Accurate weed detection is a critical component of precision agriculture, enabli
 
 The datasets used for training and evaluation can be found [on the competiton data page](https://www.kaggle.com/competitions/the-3lc-cotton-weed-detection-challenge/data)
 
+Our test runs and data collection can be found [here](https://docs.google.com/spreadsheets/d/1A6_qL16hHktbCwK9_wydJ88_l86lKN4IJ9jf3QynAYg/edit?gid=622715983#gid=622715983)
+
 # Connecting OSC to 3LC
 `ssh -L 5015:127.0.0.1:5015 <USERNAME>@pitzer-login<GET_NUMBER_FROM_OSC>.hpc.osc.edu`
 
