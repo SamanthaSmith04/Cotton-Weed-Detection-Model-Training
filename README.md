@@ -5,20 +5,33 @@ Accurate weed detection is a critical component of precision agriculture, enabli
 <img width="1500" height="500" alt="visual" src="https://github.com/user-attachments/assets/13963fcd-8eb7-4db2-a1b0-03a85b9e258e" />
 
 
-The datasets used for training and evaluation can be found [on the competiton data page](https://www.kaggle.com/competitions/the-3lc-cotton-weed-detection-challenge/data)
+The datasets used for training and evaluation can be found [on the competiton data page](https://www.kaggle.com/competitions/the-3lc-cotton-weed-detection-challenge/data) these folders contain the `train`, `val`, and `test` folders. The `test` folder has been included in this repo as well as the `test/solutions.csv` file, which was provided by the competition managers after it closed, and was used to evaluate our performance.
 
 Our test runs and data collection can be found [here](https://docs.google.com/spreadsheets/d/1A6_qL16hHktbCwK9_wydJ88_l86lKN4IJ9jf3QynAYg/edit?gid=622715983#gid=622715983)
+# Environment Setup
+```bash
+python -m venv cotton-weed-env
+source cotton-weed-env/bin/activate
+
+pip install 3lc-ultralytics
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+```
 
 # 🤖 Model Training 
 Modify the training parameters in `train.py` and ensure the image dataset is in the proper folder.
+
 `python3 train.py`
+
+Our best model for this challenge is `FINAL_MODEL.pt` and the training data can be found in `/runs/detect/D52`
 
 # 📊 Generating Predictions 
 Modify the model .pt file name in `predict.py` and ensure the test image dataset is in the proper folder.
+
 `python3 predict.py`
 
 # 📈 Evaluating Predictions
 Prediction files are stored in `result.csv`
+
 `python3 evaluate_validation.py`
 
 
