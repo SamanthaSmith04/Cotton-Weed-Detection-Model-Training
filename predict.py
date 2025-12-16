@@ -26,7 +26,7 @@ from tlc_ultralytics import YOLO
 # ============================================================================
 
 # Model weights path (from training)
-MODEL_WEIGHTS = "runs/detect/D53/weights/best.pt"
+MODEL_WEIGHTS = "FINAL_MODEL.pt"
 
 # Inference settings
 CONFIDENCE_THRESHOLD = 0.0  # Confidence threshold for detections
